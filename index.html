@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -49,16 +49,109 @@ body{font-family:'Lato',sans-serif;background:var(--cream);color:var(--text);ove
 .open-btn:hover::before{transform:scaleX(1)}
 .open-btn:hover{color:var(--green2)}
 .open-btn span{position:relative;z-index:1}
-.c-left,.c-right{position:absolute;top:0;bottom:0;width:52%;z-index:3;transition:transform 1.6s cubic-bezier(.77,0,.18,1)}
-.c-left{left:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0,rgba(255,255,255,.03) 2px,transparent 2px,transparent 30px),linear-gradient(180deg,#2E6B4F 0%,#1A4A33 40%,#2E6B4F 70%,#1A4A33 100%);box-shadow:inset -6px 0 20px rgba(0,0,0,.4),6px 0 30px rgba(0,0,0,.5)}
-.c-right{right:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0,rgba(255,255,255,.03) 2px,transparent 2px,transparent 30px),linear-gradient(180deg,#2E6B4F 0%,#1A4A33 40%,#2E6B4F 70%,#1A4A33 100%);box-shadow:inset 6px 0 20px rgba(0,0,0,.4),-6px 0 30px rgba(0,0,0,.5)}
+
+/* Tap to open hint */
+.tap-hint{
+  pointer-events:none;
+  margin-top:18px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  font-family:'Lato',sans-serif;font-size:.62rem;
+  letter-spacing:4px;text-transform:uppercase;
+  color:rgba(201,168,76,.5);
+  animation:tapPulse 2.2s ease-in-out infinite;
+}
+.tap-arrow{
+  font-size:1.1rem;
+  display:inline-block;
+  animation:tapBounce 1.6s ease-in-out infinite;
+}
+@keyframes tapPulse{0%,100%{opacity:.45}50%{opacity:1}}
+@keyframes tapBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+
+/* Curtain slip labels (on each panel) */
+.curtain-slip{
+  position:absolute;
+  top:50%;transform:translateY(-50%);
+  z-index:10;pointer-events:none;
+  background:rgba(201,168,76,.18);
+  border:1px solid rgba(201,168,76,.55);
+  backdrop-filter:blur(4px);
+  color:var(--gold);
+  font-family:'Cinzel',serif;
+  font-size:clamp(.6rem,1.4vw,.75rem);
+  letter-spacing:3px;text-transform:uppercase;
+  padding:10px 16px;
+  display:flex;align-items:center;gap:8px;
+  white-space:nowrap;
+  animation:slipGlow 2s ease-in-out infinite;
+}
+.curtain-slip span{font-size:1.1rem}
+.curtain-slip-left{right:28px;border-radius:4px 0 0 4px}
+.curtain-slip-right{left:28px;border-radius:0 4px 4px 0}
+@keyframes slipGlow{
+  0%,100%{background:rgba(201,168,76,.12);box-shadow:none}
+  50%{background:rgba(201,168,76,.28);box-shadow:0 0 14px rgba(201,168,76,.35)}
+}
+/* ── Curtain panels: realistic fabric with perspective ── */
+#curtainScreen{perspective:1100px}
+
+/* Gentle idle billow before opening */
+@keyframes billowLeft{
+  0%,100%{transform:translateX(0) skewX(0deg) scaleX(1)}
+  30%{transform:translateX(-0.8%) skewX(0.6deg) scaleX(0.995)}
+  70%{transform:translateX(0.4%) skewX(-0.4deg) scaleX(1.002)}
+}
+@keyframes billowRight{
+  0%,100%{transform:translateX(0) skewX(0deg) scaleX(1)}
+  30%{transform:translateX(0.8%) skewX(-0.6deg) scaleX(0.995)}
+  70%{transform:translateX(-0.4%) skewX(0.4deg) scaleX(1.002)}
+}
+
+/* Realistic 3-phase open: gather → swing → sweep */
+@keyframes openLeft{
+  0%  {transform:translateX(0)     skewX(0deg)    scaleX(1)    rotateY(0deg)}
+  8%  {transform:translateX(-3%)   skewX(2.5deg)  scaleX(0.97) rotateY(-2deg)}
+  20% {transform:translateX(-18%)  skewX(5deg)    scaleX(0.93) rotateY(-5deg)}
+  38% {transform:translateX(-45%)  skewX(-2deg)   scaleX(0.96) rotateY(-3deg)}
+  58% {transform:translateX(-72%)  skewX(2.5deg)  scaleX(0.98) rotateY(-1.5deg)}
+  78% {transform:translateX(-92%)  skewX(1deg)    scaleX(1)    rotateY(-0.5deg)}
+  92% {transform:translateX(-101%) skewX(0.3deg)  scaleX(1)}
+  100%{transform:translateX(-105%) skewX(0deg)    scaleX(1)    rotateY(0deg)}
+}
+@keyframes openRight{
+  0%  {transform:translateX(0)    skewX(0deg)    scaleX(1)    rotateY(0deg)}
+  8%  {transform:translateX(3%)   skewX(-2.5deg) scaleX(0.97) rotateY(2deg)}
+  20% {transform:translateX(18%)  skewX(-5deg)   scaleX(0.93) rotateY(5deg)}
+  38% {transform:translateX(45%)  skewX(2deg)    scaleX(0.96) rotateY(3deg)}
+  58% {transform:translateX(72%)  skewX(-2.5deg) scaleX(0.98) rotateY(1.5deg)}
+  78% {transform:translateX(92%)  skewX(-1deg)   scaleX(1)    rotateY(0.5deg)}
+  92% {transform:translateX(101%) skewX(-0.3deg) scaleX(1)}
+  100%{transform:translateX(105%) skewX(0deg)    scaleX(1)    rotateY(0deg)}
+}
+
+.c-left,.c-right{position:absolute;top:0;bottom:0;width:52%;z-index:3;transform-style:preserve-3d}
+.c-left{
+  left:0;transform-origin:left center;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0,rgba(255,255,255,.03) 2px,transparent 2px,transparent 30px),linear-gradient(180deg,#2E6B4F 0%,#1A4A33 40%,#2E6B4F 70%,#1A4A33 100%);
+  box-shadow:inset -6px 0 20px rgba(0,0,0,.4),6px 0 30px rgba(0,0,0,.5);
+  animation:billowLeft 4.5s ease-in-out infinite;
+}
+.c-right{
+  right:0;transform-origin:right center;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0,rgba(255,255,255,.03) 2px,transparent 2px,transparent 30px),linear-gradient(180deg,#2E6B4F 0%,#1A4A33 40%,#2E6B4F 70%,#1A4A33 100%);
+  box-shadow:inset 6px 0 20px rgba(0,0,0,.4),-6px 0 30px rgba(0,0,0,.5);
+  animation:billowRight 4.5s ease-in-out infinite;
+}
 .c-left::before,.c-right::before{content:'';position:absolute;top:0;bottom:0;width:20px;background:linear-gradient(180deg,var(--gold) 0%,var(--gold2) 50%,var(--gold) 100%);opacity:.85}
 .c-left::before{right:0}.c-right::before{left:0}
 .c-left::after,.c-right::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(0,0,0,.12) 0,transparent 15px,rgba(255,255,255,.04) 30px,transparent 45px)}
+
 .valance{position:absolute;top:0;left:0;right:0;height:76px;z-index:4;background:linear-gradient(180deg,var(--green2) 0%,var(--green) 100%);border-bottom:4px solid var(--gold)}
 .valance::after{content:'';position:absolute;bottom:-18px;left:0;right:0;height:18px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 18'%3E%3Cpath d='M0,0 Q10,18 20,0 Q30,18 40,0 Q50,18 60,0 Q70,18 80,0 Q90,18 100,0 Q110,18 120,0 Q130,18 140,0 Q150,18 160,0 Q170,18 180,0 Q190,18 200,0Z' fill='%231D4A36'/%3E%3C/svg%3E") repeat-x;background-size:200px 18px}
-#curtainScreen.open .c-left{transform:translateX(-100%)}
-#curtainScreen.open .c-right{transform:translateX(100%)}
+
+/* Override billow with fabric sweep on open */
+#curtainScreen.open .c-left{animation:openLeft 2.6s cubic-bezier(0.22,0.61,0.36,1) forwards}
+#curtainScreen.open .c-right{animation:openRight 2.6s cubic-bezier(0.22,0.61,0.36,1) forwards}
 #curtainScreen.gone{display:none}
 
 /* MAIN */
@@ -200,9 +293,24 @@ footer{background:var(--green2);color:var(--cream);text-align:center;padding:40p
     <h1 class="c-title">You Are Cordially Invited</h1>
     <p class="c-sub">To Celebrate a Blessed Union</p>
     <button class="open-btn" id="openBtn"><span>&#10022; Open Invitation &#10022;</span></button>
+    <!-- Pulsing tap hint below button -->
+    <div class="tap-hint">
+      <span class="tap-arrow">&#8964;</span>
+      Tap anywhere to open
+      <span class="tap-arrow">&#8964;</span>
+    </div>
   </div>
-  <div class="c-left"></div>
-  <div class="c-right"></div>
+  <!-- Physical tap-slip labels on each curtain panel -->
+  <div class="c-left">
+    <div class="curtain-slip curtain-slip-left">
+      <span>&#9757;</span> Tap to Open
+    </div>
+  </div>
+  <div class="c-right">
+    <div class="curtain-slip curtain-slip-right">
+      Tap to Open <span>&#9757;</span>
+    </div>
+  </div>
 </div>
 
 <!-- MAIN -->
@@ -559,7 +667,7 @@ function initCanvas() {
   /* Paint gold scratch layer */
   var g = ctx.createLinearGradient(0, 0, cv.width, cv.height);
   g.addColorStop(0, '#C9A84C');
-  g.addColorStop(0.5, '#A8862A');
+  g.addColorStop(0, '#A8862A');
   g.addColorStop(1, '#C9A84C');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, cv.width, cv.height);
@@ -603,13 +711,13 @@ function initCanvas() {
     }
     var pct = Math.round((cleared / (pixels.length / 4)) * 100);
 
-    /* CONFETTI fires at 70% */
-    if (pct >= 40 && !confettiFired) {
+    /* CONFETTI fires at 30% */
+    if (pct >= 30 && !confettiFired) {
       confettiFired = true;
       launchConfetti();
     }
 
-    if (pct >= 40) {
+    if (pct >= 30) {
       done = true;
       /* Clear remaining scratch layer completely */
       ctx.globalCompositeOperation = 'destination-out';
@@ -617,6 +725,29 @@ function initCanvas() {
       prog.textContent = '\uD83C\uDF89 Revealed! 27th December 2026 — Sunday!';
       prog.style.color = 'var(--green)';
       prog.style.fontWeight = '700';
+      /* Auto-dismiss modal after 5 seconds */
+      var countdown = 10;
+      var countEl = document.createElement('p');
+      countEl.style.cssText = 'font-family:Lato,sans-serif;font-size:.65rem;letter-spacing:2px;color:var(--soft);margin-top:8px;text-transform:uppercase';
+      countEl.textContent = 'Closing in ' + countdown + 's...';
+      prog.parentNode.appendChild(countEl);
+      /* Progress bar */
+      var barWrap = document.createElement('div');
+      barWrap.style.cssText = 'width:100%;max-width:280px;height:3px;background:rgba(0,0,0,.1);border-radius:2px;margin:8px auto 0;overflow:hidden';
+      var bar = document.createElement('div');
+      bar.style.cssText = 'height:100%;width:100%;background:var(--gold);border-radius:2px;transition:width linear';
+      barWrap.appendChild(bar);
+      prog.parentNode.appendChild(barWrap);
+      /* Animate bar */
+      setTimeout(function(){ bar.style.transitionDuration = '5s'; bar.style.width = '0%'; }, 50);
+      var ticker = setInterval(function(){
+        countdown--;
+        if(countdown > 0){ countEl.textContent = 'Closing in ' + countdown + 's...'; }
+        else {
+          clearInterval(ticker);
+          scrModal.classList.remove('show');
+        }
+      }, 1000);
     } else {
       prog.textContent = pct + '% scratched\u2026 keep going! \u2728';
     }
